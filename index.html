@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Змейка</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        #gameCanvas {
+            border: 2px solid #444;
+            background-color: #000;
+        }
+        #score {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+        .controls {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Змейка</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="score">Счет: 0</div>
+    <div class="controls">Управление: стрелки или WASD</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let score = 0;
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0;
+        let dy = 0;
+        let gameInterval;
+        let speed = 100;
+
+        function initGame() {
+            score = 0;
+            snake = [{ x: 10, y: 10 }];
+            dx = 1;
+            dy = 0;
+            scoreElement.textContent = 'Счет: ' + score;
+            spawnFood();
+
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, speed);
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
+            };
+
+            for (let part of snake) {
+                if (part.x === food.x && part.y === food.y) {
+                    spawnFood();
+                    break;
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (dx === 0 && dy === 0) return;
+
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                resetGame();
+                return;
+            }
+
+            for (let part of snake) {
+                if (head.x === part.x && head.y === part.y) {
+                    resetGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                scoreElement.textContent = 'Счет: ' + score;
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            draw();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+
+            ctx.fillStyle = '#0f0';
+            for (let part of snake) {
+                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+        }
+
+        function resetGame() {
+            clearInterval(gameInterval);
+            ctx.fillStyle = '#fff';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Игра окончена!', canvas.width / 2, canvas.height / 2 - 15);
+            ctx.font = '20px Arial';
+            ctx.fillText('Нажмите пробел для рестарта', canvas.width / 2, canvas.height / 2 + 20);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                case 'ц':
+                case 'Ц':
+                    if (dy === 0) { dx = 0; dy = -1; }
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                case 'ы':
+                case 'Ы':
+                    if (dy === 0) { dx = 0; dy = 1; }
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                case 'ф':
+                case 'Ф':
+                    if (dx === 0) { dx = -1; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                case 'в':
+                case 'В':
+                    if (dx === 0) { dx = 1; dy = 0; }
+                    break;
+                case ' ':
+                    initGame();
+                    break;
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>

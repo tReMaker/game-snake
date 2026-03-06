@@ -1,0 +1,31 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Overview
+
+This is a classic Snake game built with vanilla HTML, CSS, and JavaScript. The game is contained entirely in `index.html` and runs in a web browser.
+
+## Architecture
+
+The game uses a simple canvas-based rendering system with:
+- A 20x20 grid on a 400x400 canvas
+- Snake movement controlled by keyboard input (arrow keys or WASD + Russian keyboard support)
+- Score tracking displayed on the page
+- Game loop running at 100ms intervals
+
+## Key Components
+
+- `gameLoop()`: Main game logic - moves snake, checks collisions, handles food
+- `draw()`: Renders the game state to the canvas
+- `spawnFood()`: Generates random food position not on the snake
+- `resetGame()`: Handles game over state with "Press space to restart"
+
+## Running the Game
+
+Open `index.html` in a web browser. No build tools or dependencies are required.
+
+## Controls
+
+- Arrow keys or WASD (including Russian layout: ц,ы,ф,в) to move
+- Spacebar to restart after game over

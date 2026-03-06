@@ -48,10 +48,13 @@
 
         const gridSize = 20;
         const tileCount = canvas.width / gridSize;
+        const BONUS_DURATION = 15000; // 15 seconds
+        const BONUS_SPAWN_CHANCE = 0.2; // 20%
 
         let score = 0;
         let snake = [{ x: 10, y: 10 }];
         let food = { x: 15, y: 15 };
+        let bonus = null; // { x, y, spawnTime }
         let dx = 0;
         let dy = 0;
         let gameInterval;
@@ -64,9 +67,11 @@
             dy = 0;
             scoreElement.textContent = 'Счет: ' + score;
             spawnFood();
+            bonus = null;
 
             if (gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(gameLoop, speed);
+            setInterval(checkBonusTimeout, 100);
         }
 
         function spawnFood() {
@@ -80,6 +85,29 @@
                     spawnFood();
                     break;
                 }
+            }
+        }
+
+        function spawnBonus() {
+            if (bonus !== null) return;
+
+            bonus = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount),
+                spawnTime: Date.now()
+            };
+
+            for (let part of snake) {
+                if (part.x === bonus.x && part.y === bonus.y) {
+                    spawnBonus();
+                    break;
+                }
+            }
+        }
+
+        function checkBonusTimeout() {
+            if (bonus !== null && Date.now() - bonus.spawnTime >= BONUS_DURATION) {
+                bonus = null;
             }
         }
 
@@ -106,6 +134,16 @@
                 score++;
                 scoreElement.textContent = 'Счет: ' + score;
                 spawnFood();
+
+                if (Math.random() < BONUS_SPAWN_CHANCE) {
+                    spawnBonus();
+                }
+            } else if (bonus !== null && head.x === bonus.x && head.y === bonus.y) {
+                bonus = null;
+                if (snake.length > 2) {
+                    snake.pop();
+                    snake.pop();
+                }
             } else {
                 snake.pop();
             }
@@ -116,6 +154,11 @@
         function draw() {
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (bonus !== null) {
+                ctx.fillStyle = '#00f';
+                ctx.fillRect(bonus.x * gridSize, bonus.y * gridSize, gridSize - 2, gridSize - 2);
+            }
 
             ctx.fillStyle = '#f00';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);

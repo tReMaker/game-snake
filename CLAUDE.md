@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a classic Snake game built with vanilla HTML, CSS, and JavaScript. The game is contained entirely in `index.html` and runs in a web browser.
 
+## Features
+
+- **Red food**: Increases snake length and score
+- **Blue bonus**: Appears with 20% chance when eating food, reduces snake length by 1 if eaten
+- Bonus disappears after 15 seconds if not eaten
+
 ## Architecture
 
 The game uses a simple canvas-based rendering system with:
@@ -16,9 +22,11 @@ The game uses a simple canvas-based rendering system with:
 
 ## Key Components
 
-- `gameLoop()`: Main game logic - moves snake, checks collisions, handles food
+- `gameLoop()`: Main game logic - moves snake, checks collisions, handles food and bonus
 - `draw()`: Renders the game state to the canvas
 - `spawnFood()`: Generates random food position not on the snake
+- `spawnBonus()`: Generates blue bonus that reduces snake length (20% chance on eating food)
+- `checkBonusTimeout()`: Removes bonus after 15 seconds if uneaten
 - `resetGame()`: Handles game over state with "Press space to restart"
 
 ## Running the Game

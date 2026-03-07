@@ -50,11 +50,16 @@
         const tileCount = canvas.width / gridSize;
         const BONUS_DURATION = 15000; // 15 seconds
         const BONUS_SPAWN_CHANCE = 0.2; // 20%
+        const ANTI_BONUS_CHANCE = 0.1; // 10% шанс антибонуса
+        const STONE_COLOR = '#8B4513'; // коричневый цвет камня
+        const ANTI_BONUS_COLOR = '#FFA500'; // оранжевый цвет антибонуса
 
         let score = 0;
         let snake = [{ x: 10, y: 10 }];
         let food = { x: 15, y: 15 };
         let bonus = null; // { x, y, spawnTime }
+        let stones = []; // массив для хранения камней
+        let antiBonus = null; // { x, y, spawnTime } или null
         let dx = 0;
         let dy = 0;
         let gameInterval;
@@ -68,10 +73,13 @@
             scoreElement.textContent = 'Счет: ' + score;
             spawnFood();
             bonus = null;
+            stones = [];
+            antiBonus = null;
 
             if (gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(gameLoop, speed);
             setInterval(checkBonusTimeout, 100);
+            setInterval(checkAntiBonusTimeout, 100);
         }
 
         function spawnFood() {
@@ -105,6 +113,49 @@
             }
         }
 
+        function spawnAntiBonus() {
+            if (antiBonus !== null) return;
+
+            antiBonus = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount),
+                spawnTime: Date.now()
+            };
+
+            // Проверяем, не попал ли антибонус в змейку
+            for (let part of snake) {
+                if (part.x === antiBonus.x && part.y === antiBonus.y) {
+                    spawnAntiBonus();
+                    return;
+                }
+            }
+
+            // Проверяем, не попал ли в камень
+            for (let stone of stones) {
+                if (stone.x === antiBonus.x && stone.y === antiBonus.y) {
+                    spawnAntiBonus();
+                    return;
+                }
+            }
+
+            // Проверяем, не попал ли в еду
+            if (antiBonus.x === food.x && antiBonus.y === food.y) {
+                spawnAntiBonus();
+                return;
+            }
+        }
+
+        function spawnStone(x, y) {
+            stones.push({ x, y });
+        }
+
+        function checkAntiBonusTimeout() {
+            if (antiBonus !== null && Date.now() - antiBonus.spawnTime >= BONUS_DURATION) {
+                spawnStone(antiBonus.x, antiBonus.y);
+                antiBonus = null;
+            }
+        }
+
         function checkBonusTimeout() {
             if (bonus !== null && Date.now() - bonus.spawnTime >= BONUS_DURATION) {
                 bonus = null;
@@ -128,6 +179,14 @@
                 }
             }
 
+            // Проверка столкновения с камнями
+            for (let stone of stones) {
+                if (head.x === stone.x && head.y === stone.y) {
+                    resetGame();
+                    return;
+                }
+            }
+
             snake.unshift(head);
 
             if (head.x === food.x && head.y === food.y) {
@@ -138,6 +197,11 @@
                 if (Math.random() < BONUS_SPAWN_CHANCE) {
                     spawnBonus();
                 }
+                if (Math.random() < ANTI_BONUS_CHANCE) {
+                    spawnAntiBonus();
+                }
+            } else if (antiBonus !== null && head.x === antiBonus.x && head.y === antiBonus.y) {
+                antiBonus = null;
             } else if (bonus !== null && head.x === bonus.x && head.y === bonus.y) {
                 bonus = null;
                 if (snake.length > 2) {
@@ -155,6 +219,19 @@
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Рисуем камни
+            ctx.fillStyle = STONE_COLOR;
+            for (let stone of stones) {
+                ctx.fillRect(stone.x * gridSize, stone.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+
+            // Рисуем антибонус
+            if (antiBonus !== null) {
+                ctx.fillStyle = ANTI_BONUS_COLOR;
+                ctx.fillRect(antiBonus.x * gridSize, antiBonus.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+
+            // Рисуем бонус
             if (bonus !== null) {
                 ctx.fillStyle = '#00f';
                 ctx.fillRect(bonus.x * gridSize, bonus.y * gridSize, gridSize - 2, gridSize - 2);

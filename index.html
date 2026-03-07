@@ -203,11 +203,17 @@
             } else if (antiBonus !== null && head.x === antiBonus.x && head.y === antiBonus.y) {
                 antiBonus = null;
             } else if (bonus !== null && head.x === bonus.x && head.y === bonus.y) {
-                bonus = null;
-                if (snake.length > 2) {
-                    snake.pop();
+                // Вычисляем ценность на основе времени (1-9)
+                const timeAlive = Date.now() - bonus.spawnTime;
+                const value = Math.min(9, Math.max(1, Math.floor(timeAlive / (BONUS_DURATION / 9))));
+
+                // Удаляем value сегментов, но не меньше 1
+                const segmentsToRemove = Math.min(snake.length - 1, value);
+                for (let i = 0; i < segmentsToRemove; i++) {
                     snake.pop();
                 }
+
+                bonus = null;
             } else {
                 snake.pop();
             }

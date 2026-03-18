@@ -14,7 +14,7 @@ This is a classic Snake game built with vanilla HTML, CSS, and JavaScript. The g
 - Bonus disappears after 15 seconds if not eaten
 - Ценность бонуса: вычисляется от 1 до 9 в зависимости от времени, проведенного бонусом на экране
 - Формула: value = floor(timeAlive / (15000 / 9)), ограниченная min=1, max=9
-- Ценность отображается белым текстом внутри синего квадрата и в отдельном блоке "Бонус: X"
+- Ценность отображается белым текстом внутри синего квадрата
 
 - **Оранжевый квадрат (антибонус)** появляется с ~10% вероятностью при съедании красной еды
 - Через 15 секунд антибонус исчезает и на его месте появляется коричневый камень
@@ -38,7 +38,6 @@ The game uses a simple canvas-based rendering system with:
 - `spawnFood()`: Generates random food position not on the snake
 - `spawnBonus()`: Generates blue bonus with spawn timestamp (20% chance on eating food)
 - `checkBonusTimeout()`: Removes bonus after 15 seconds if uneaten
-- `updateBonusInfo()`: Updates the on-screen bonus value display
 - `resetGame()`: Handles game over state with "Press space to restart"
 - `spawnAntiBonus()`: генерирует оранжевый антибонус с проверкой, чтобы он не попал в змейку, камень или еду
 - `spawnStone(x, y)`: добавляет камень в массив
@@ -49,10 +48,7 @@ The game uses a simple canvas-based rendering system with:
 Open `index.html` in a web browser. No build tools or dependencies are required.
 
 ## Current Features (as of latest update)
-
-- Bonus value (1-9) displayed on-screen:
-  - White text drawn inside the blue bonus square
-  - Text block below score shows "Бонус: X" when active
+- White text drawn inside the blue bonus square
 
 ## Controls
 

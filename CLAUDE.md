@@ -14,7 +14,7 @@ This is a classic Snake game built with vanilla HTML, CSS, and JavaScript. The g
 - Bonus disappears after 15 seconds if not eaten
 - Ценность бонуса: вычисляется от 1 до 9 в зависимости от времени, проведенного бонусом на экране
 - Формула: value = floor(timeAlive / (15000 / 9)), ограниченная min=1, max=9
-- Ценность отображается белым текстом внутри синего квадрата и в отдельном блоке "Бонус: X"
+- Ценность отображается белым текстом внутри синего квадрата
 
 - **Оранжевый квадрат (антибонус)** появляется с ~10% вероятностью при съедании красной еды
 - Через 15 секунд антибонус исчезает и на его месте появляется коричневый камень
@@ -30,31 +30,42 @@ The game uses a simple canvas-based rendering system with:
 - Snake movement controlled by keyboard input (arrow keys or WASD + Russian keyboard support)
 - Score tracking displayed on the page
 - Game loop running at 100ms intervals
+- Separate interval for bonus/anti-bonus timeout checks (100ms)
+
+### File Structure
+- `index.html`: Main HTML file with canvas, score display, and controls hint
+- `style.css`: Minimal CSS for centering and basic styling
+- `game.js`: All game logic, rendering, and event handling
 
 ## Key Components
 
 - `gameLoop()`: Main game logic - moves snake, checks collisions, handles food and bonus
-- `draw()`: Renders the game state to the canvas (including bonus value text when active)
+- `draw()`: Renders the game state to the canvas
+- `drawPause()`: Renders pause overlay with "Пауза" text (calls draw() first)
 - `spawnFood()`: Generates random food position not on the snake
 - `spawnBonus()`: Generates blue bonus with spawn timestamp (20% chance on eating food)
 - `checkBonusTimeout()`: Removes bonus after 15 seconds if uneaten
-- `updateBonusInfo()`: Updates the on-screen bonus value display
 - `resetGame()`: Handles game over state with "Press space to restart"
-- `spawnAntiBonus()`: генерирует оранжевый антибонус с проверкой, чтобы он не попал в змейку, камень или еду
-- `spawnStone(x, y)`: добавляет камень в массив
-- `checkAntiBonusTimeout()` проверяет 15 секунд и превращает антибонус в камень
+- `spawnAntiBonus()`: Generates orange anti-bonus with checks to avoid snake, stones, or food
+- `spawnStone(x, y)`: Adds a stone to the stones array
+- `checkAntiBonusTimeout()`: Checks 15 seconds and converts anti-bonus to stone
+
+## State Management
+
+- `isPaused`: Boolean flag to control pause state (prevents game logic execution when true)
+- Game loop returns early if `isPaused` is true or movement vectors are zero
 
 ## Running the Game
 
 Open `index.html` in a web browser. No build tools or dependencies are required.
 
 ## Current Features (as of latest update)
-
-- Bonus value (1-9) displayed on-screen:
-  - White text drawn inside the blue bonus square
-  - Text block below score shows "Бонус: X" when active
+- White text drawn inside the blue bonus square
+- **Pause**: Press spacebar during gameplay to pause (shows "Пауза" overlay)
+- **Resume**: Press spacebar again to continue from pause
+- **Restart**: Press spacebar at Game Over to restart
 
 ## Controls
 
 - Arrow keys or WASD (including Russian layout: ц,ы,ф,в) to move
-- Spacebar to restart after game over
+- Spacebar: pause/resume during game, or restart after Game Over

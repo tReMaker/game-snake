@@ -19,6 +19,8 @@ let antiBonus = null; // { x, y, spawnTime } или null
 let dx = 0;
 let dy = 0;
 let gameInterval;
+let bonusTimeoutInterval;
+let antiBonusTimeoutInterval;
 let speed = 100;
 let isPaused = false;
 
@@ -35,9 +37,12 @@ function initGame() {
     antiBonus = null;
 
     if (gameInterval) clearInterval(gameInterval);
+    if (bonusTimeoutInterval) clearInterval(bonusTimeoutInterval);
+    if (antiBonusTimeoutInterval) clearInterval(antiBonusTimeoutInterval);
+
     gameInterval = setInterval(gameLoop, speed);
-    setInterval(checkBonusTimeout, 100);
-    setInterval(checkAntiBonusTimeout, 100);
+    bonusTimeoutInterval = setInterval(checkBonusTimeout, 100);
+    antiBonusTimeoutInterval = setInterval(checkAntiBonusTimeout, 100);
 }
 
 function spawnFood() {
@@ -122,7 +127,11 @@ function checkBonusTimeout() {
 
 function gameLoop() {
     if (dx === 0 && dy === 0) return;
-    if (isPaused) return;
+
+    if (isPaused) {
+        drawPause();
+        return;
+    }
 
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
@@ -177,11 +186,7 @@ function gameLoop() {
         snake.pop();
     }
 
-    if (isPaused) {
-        drawPause();
-    } else {
-        draw();
-    }
+    draw();
 }
 
 function drawPause() {
@@ -242,7 +247,11 @@ function draw() {
 
 function resetGame() {
     isPaused = false;
+    dx = 0;
+    dy = 0;
     clearInterval(gameInterval);
+    if (bonusTimeoutInterval) clearInterval(bonusTimeoutInterval);
+    if (antiBonusTimeoutInterval) clearInterval(antiBonusTimeoutInterval);
     ctx.fillStyle = '#fff';
     ctx.font = '30px Arial';
     ctx.textAlign = 'center';

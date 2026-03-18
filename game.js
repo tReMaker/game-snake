@@ -27,8 +27,10 @@ let bonusTimeoutInterval;
 let antiBonusTimeoutInterval;
 let speed = 100;
 let isPaused = false;
+let isGameOver = false;
 
 function initGame() {
+    isGameOver = false;
     isPaused = false;
     score = 0;
     snake = [{ x: 10, y: 10 }];
@@ -130,7 +132,7 @@ function checkBonusTimeout() {
 }
 
 function gameLoop() {
-    if (dx === 0 && dy === 0) return;
+    if (isGameOver) return;
 
     if (isPaused) {
         drawPause();
@@ -249,9 +251,7 @@ function draw() {
 }
 
 function resetGame() {
-    isPaused = false;
-    dx = 0;
-    dy = 0;
+    isGameOver = true;
     clearInterval(gameInterval);
     if (bonusTimeoutInterval) clearInterval(bonusTimeoutInterval);
     if (antiBonusTimeoutInterval) clearInterval(antiBonusTimeoutInterval);
@@ -264,6 +264,14 @@ function resetGame() {
 }
 
 document.addEventListener('keydown', (e) => {
+    // Если игра окончена - только пробел
+    if (isGameOver) {
+        if (e.key === ' ') {
+            initGame();
+        }
+        return;
+    }
+
     switch (e.key) {
         case 'ArrowUp':
         case 'w':
@@ -294,10 +302,7 @@ document.addEventListener('keydown', (e) => {
             if (dx === 0) { dx = 1; dy = 0; }
             break;
         case ' ':
-            if (dx === 0 && dy === 0) {
-                // Игра остановлена или Game Over - перезапуск
-                initGame();
-            } else if (isPaused) {
+            if (isPaused) {
                 // Продолжить игру
                 isPaused = false;
             } else {

@@ -14,6 +14,10 @@ const ANTI_BONUS_COLOR = '#FFA500'; // оранжевый цвет антибо�
 const appleImage = new Image();
 appleImage.src = 'sprite/apple.png';
 
+// Загрузка спрайта лимона
+const lemonImage = new Image();
+lemonImage.src = 'sprite/lemon.png';
+
 let score = 0;
 let snake = [{ x: 10, y: 10 }];
 let food = { x: 15, y: 15 };
@@ -181,8 +185,8 @@ function gameLoop() {
         const timeAlive = Date.now() - bonus.spawnTime;
         const value = Math.min(9, Math.max(1, Math.floor(timeAlive / (BONUS_DURATION / 9))));
 
-        // Удаляем value сегментов, но не меньше 1
-        const segmentsToRemove = Math.min(snake.length - 1, value);
+        // Удаляем голову + value сегментов (змейка уменьшается)
+        const segmentsToRemove = Math.min(snake.length - 1, value + 1);
         for (let i = 0; i < segmentsToRemove; i++) {
             snake.pop();
         }
@@ -223,18 +227,19 @@ function draw() {
         ctx.fillRect(antiBonus.x * gridSize, antiBonus.y * gridSize, gridSize - 2, gridSize - 2);
     }
 
-    // Рисуем бонус
+    // Рисуем бонус (лимон)
     if (bonus !== null) {
-        ctx.fillStyle = '#00f';
-        ctx.fillRect(bonus.x * gridSize, bonus.y * gridSize, gridSize - 2, gridSize - 2);
+        // Масштабируем лимон до размера клетки (20x20)
+        ctx.drawImage(lemonImage, bonus.x * gridSize, bonus.y * gridSize, gridSize, gridSize);
 
-        // Рисуем ценность бонуса поверх синего квадрата
+        // Рисуем ценность поверх лимона
         const timeAlive = Date.now() - bonus.spawnTime;
         const value = Math.min(9, Math.max(1, Math.floor(timeAlive / (BONUS_DURATION / 9))));
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px Arial';
+        ctx.fillStyle = '#00f';
+        ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(value, bonus.x * gridSize + gridSize / 2, bonus.y * gridSize + gridSize / 2 + 5);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(value, bonus.x * gridSize + gridSize / 2, bonus.y * gridSize + gridSize / 2);
     }
 
     ctx.drawImage(appleImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);

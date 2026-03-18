@@ -10,6 +10,10 @@ const ANTI_BONUS_CHANCE = 0.1; // 10% шанс антибонуса
 const STONE_COLOR = '#8B4513'; // коричневый цвет камня
 const ANTI_BONUS_COLOR = '#FFA500'; // оранжевый цвет антибонуса
 
+// Загрузка спрайта яблока
+const appleImage = new Image();
+appleImage.src = 'sprite/apple.png';
+
 let score = 0;
 let snake = [{ x: 10, y: 10 }];
 let food = { x: 15, y: 15 };
@@ -231,8 +235,7 @@ function draw() {
         ctx.fillText(value, bonus.x * gridSize + gridSize / 2, bonus.y * gridSize + gridSize / 2 + 5);
     }
 
-    ctx.fillStyle = '#f00';
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    ctx.drawImage(appleImage, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 
     // Рисуем голову змейки светло-зеленым цветом
     ctx.fillStyle = '#0f0';

@@ -33,19 +33,12 @@
             font-size: 14px;
             color: #aaa;
         }
-        #bonusInfo {
-            margin-top: 10px;
-            font-size: 16px;
-            color: #4fa;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <h1>Змейка</h1>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <div id="score">Счет: 0</div>
-    <div id="bonusInfo">Бонус: ?</div>
     <div class="controls">Управление: стрелки или WASD</div>
 
     <script>
@@ -169,18 +162,6 @@
             }
         }
 
-        function updateBonusInfo() {
-            const bonusElement = document.getElementById('bonusInfo');
-            if (bonus !== null) {
-                const timeAlive = Date.now() - bonus.spawnTime;
-                const value = Math.min(9, Math.max(1, Math.floor(timeAlive / (BONUS_DURATION / 9))));
-                bonusElement.textContent = 'Бонус: ' + value;
-                bonusElement.style.display = 'block';
-            } else {
-                bonusElement.style.display = 'none';
-            }
-        }
-
         function gameLoop() {
             if (dx === 0 && dy === 0) return;
 
@@ -233,13 +214,11 @@
                 }
 
                 bonus = null;
-                updateBonusInfo();
             } else {
                 snake.pop();
             }
 
             draw();
-            updateBonusInfo();
         }
 
         function draw() {
